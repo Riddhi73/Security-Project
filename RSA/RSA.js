@@ -1,9 +1,11 @@
 const RSA = require('./Helper');
+const fs = require('fs');
 const prompt = require("prompt-sync")();
 
 // Message
 const message = prompt('Please Enter Something :');
 console.log('Original Message: ',message);
+
 
 // Generate RSA keys
 const keys = RSA.generate(250);

@@ -1,9 +1,10 @@
 const fs = require('fs');
 const NodeRSA = require('node-rsa');
 
-const key = new NodeRSA({ b: 512 });
+const privateKeyPem = fs.readFileSync('private.pem'); // Replace with your private key file
+const key = new NodeRSA(privateKeyPem, 'pkcs1-private-pem');
 
-// Read the encrypted image file
+// Read the encrypted image file as binary data
 const encryptedImageBuffer = fs.readFileSync('encryptedImage.enc');
 
 // Decrypt the encrypted image data using the private key
