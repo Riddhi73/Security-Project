@@ -1,0 +1,17 @@
+@import url('https://fonts.googleapis.com/css2?family=Cherish&family=Pinyon+Script&family=Roboto&family=Splash&display=swap');
+
+.bg-theme{
+    background-color: rgb(0, 57, 214);
+    color:white !important;
+    height: 70px;
+}
+.brand-name{
+    font-family: sans-serif;
+    font-style:normal;
+    font-weight: 300;
+    font-size: 24px;
+}   
+.px5p{
+    padding: 0% 10%;
+    }
+    
