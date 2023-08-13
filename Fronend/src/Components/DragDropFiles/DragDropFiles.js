@@ -1,11 +1,45 @@
 /* eslint-disable jsx-a11y/anchor-is-valid */
-import { useState, useRef } from "react";
+import React,{ useState, useRef } from "react";
 import DriveFolderUploadIcon from "@mui/icons-material/DriveFolderUpload";
 import "./DragDropFiles.css";
-import imgpng from "../../img/image.png";
+import Select from 'react-select'
 import drag from "../../img/drag2.png";
 
+const dropListItem =[
+  {
+    value:1,
+    label:"RSA"
+  },
+  {
+    value:2,
+    label:"AES"
+  },
+  {
+    value:3,
+    label:"Vigenere"
+  },
+  {
+    value:4,
+    label:"Hill Cypher"
+  },
+  
+  {
+    value:5,
+    label:"Caesar cipher"
+  },
+  
+
+]
+
 const DragDropFiles = () => {
+  const [valueEn,setValueEn]=useState(dropListItem.label)
+  const [valueDe,setValueDe]=useState(dropListItem.label)
+  const DropActionEn = e =>{
+    setValueEn(e.label);
+  }
+  const DropActionDe = e =>{
+    setValueDe(e.label);
+  }
   const [files, setFiles] = useState(null);
   const inputRef = useRef();
 
@@ -31,20 +65,20 @@ const DragDropFiles = () => {
     // )
   };
 
-  if (files)
-    return (
-      <div className="uploads">
-        <ul>
-          {Array.from(files).map((file, idx) => (
-            <li key={idx}>{file.name}</li>
-          ))}
-        </ul>
-        <div className="actions py-5">
-          <button className="btn btn-danger" onClick={() => setFiles(null)}>Cancel</button>
-          <button className="btn btn-info" onClick={handleUpload}>Upload</button>
-        </div>
-      </div>
-    );
+  // if (files)
+  //   return (
+  //     <div className="uploads">
+  //       <ul>
+  //         {Array.from(files).map((file, idx) => (
+  //           <li key={idx}>{file.name}</li>
+  //         ))}
+  //       </ul>
+  //       <div className="actions py-5">
+  //         <button className="btn btn-danger" onClick={() => setFiles(null)}>Cancel</button>
+  //         <button className="btn btn-info" onClick={handleUpload}>Upload</button>
+  //       </div>
+  //     </div>
+  //   );
 
   return (
     <div className="bg-theme-d">
@@ -83,58 +117,64 @@ const DragDropFiles = () => {
             </div>
           </div>
         </div>
+        {
+          (files)&&<div className="uploads">
+          <ul>
+            {Array.from(files).map((file, idx) => (
+              <li className="text-light pt-5" key={idx}>{file.name}</li>
+            ))}
+          </ul>
+          <div className="actions py-4 ">
+            <button className="btn btn-danger px-4 " onClick={() => setFiles(null)}>Cancel</button>
+            {/* <button className="btn btn-info px-4" onClick={handleUpload}>Upload</button> */}
+          </div>
+        </div>
+        }
       </div>
 
       
-      <div className="text-light pt-4 pb-5 container">
+      <div className="container w-100 d-flex gap-5">
+      <div className="w-50">
+      <div className=" pt-4 pb-5 ">
         <div className="w-100 ">
-          <div className="w-50 d-flex flex-column my-5">
-            <h4 className="text-light text-start fw-light">
-              2. Select an Encryptton or Decryption Algorithm :
+          <div className="w-100 d-flex flex-column my-5">
+          <h2 className="text-info text-start p-3 border border-info fw-light">
+            Encryption 
+            </h2>
+            <h4 className="text-light text-start fw-light pt-4">
+              2. Select an Encryption Algorithm :
             </h4>
-            <div class="dropdown me-auto pt-4">
-              <button
-                class="btn btn-light dropdown-toggle ms-0 rounded-1 px-5 py-2"
-                type="button"
-                id="dropdownMenuButton2"
-                data-bs-toggle="dropdown"
-                aria-expanded="false"
-              >
-                Encryptton or Decryptton Algorithm
-              </button>
-              <ul class="dropdown-menu " aria-labelledby="dropdownMenuButton2">
-                <li>
-                  <a class="dropdown-item active" href="#">
-                    AES
-                  </a>
-                </li>
-                <li>
-                  <a class="dropdown-item" href="#">
-                    RSA
-                  </a>
-                </li>
-                <li>
-                  <a class="dropdown-item" href="#">
-                    ljflsadl
-                  </a>
-                </li>
-                <li></li>
-                <li>
-                  <a class="dropdown-item" href="#">
-                    Separated link
-                  </a>
-                </li>
-              </ul>
+            <div class="me-auto pt-4 w-50">
+            <Select options={dropListItem} onChange={DropActionEn}/>
+           
             </div>
+           
           </div>
-          <div className="w-100 pt-5">
+          {
+            (valueEn==="RSA") && <div className="w-100 pt-5">
             <h4 className="text-light text-start fw-light">
-              3. Insert Encryptton or Decryption key :
+              3. Insert Encryption keys :
             </h4>
             <div class="row g-3 align-items-center pt-4 mx-auto">
-              <div class="col-auto">
+              <div class="col-auto text-light">
                 <label for="inputPassword6" class="col-form-label" >
-                Public  Key :
+                Public  Key  ' e ' :
+                </label>
+              </div>
+              <div class="col-auto">
+                <input
+                  type="password"
+                  id="inputPassword6"
+                  class="form-control"
+                  aria-describedby="passwordHelpInline"
+                  placeholder="Insert key"
+                />
+              </div>
+            </div>
+            <div class="row g-3 align-items-center pt-4 mx-auto">
+              <div class="col-auto text-light">
+                <label for="inputPassword6" class="col-form-label" >
+                Public  Key  ' n ' :
                 </label>
               </div>
               <div class="col-auto">
@@ -148,11 +188,37 @@ const DragDropFiles = () => {
               </div>
             </div>
           </div>
+          }
+           {
+            (valueEn!=="RSA") && <div className="w-100 pt-5">
+            <h4 className="text-light text-start fw-light">
+              3. Insert Decryption keys :
+            </h4>
+           
+            <div class="row g-3 align-items-center pt-4 mx-auto">
+              <div class="col-auto text-light">
+                <label for="inputPassword6" class="col-form-label" >
+               Key value :
+                </label>
+              </div>
+              <div class="col-auto">
+                <input
+                  type="password"
+                  id="inputPassword6"
+                  class="form-control"
+                  aria-describedby="passwordHelpInline"
+                  placeholder="Insert key"
+                />
+              </div>
+            </div>
+          </div>
+          }
+
         </div>
       </div>
 
 
-      <div className="text-light pb-5 container">
+      <div className="text-light pb-5 ">
         <div className="w-100 ">
         <h4 className="text-light text-start fw-light pt-5">
           4. Download your file :
@@ -164,6 +230,106 @@ const DragDropFiles = () => {
           <button className="btn btn-danger px-5 ms-4" onClick={() => setFiles(null)}>Cancel</button>
         </div>
       </div> 
+        
+      </div>
+      </div>
+
+      <div className="w-50">
+      <div className=" pt-4 pb-5 ">
+        <div className="w-100 ">
+          <div className="w-100 d-flex flex-column my-5">
+          <h2 className="text-info text-end border border-info p-3 fw-light">
+            Decryption 
+            </h2>
+            <h4 className="text-light text-end fw-light pt-4">
+              2. Select an Decryption Algorithm :
+            </h4>
+            <div class="ms-auto pt-4 w-50">
+            <Select options={dropListItem} onChange={DropActionDe}/>
+            </div>
+           
+          </div>
+          {
+            (valueDe==="RSA") &&<div className="w-100 pt-5 d-flex flex-column">
+            <h4 className="text-light text-end fw-light">
+              3. Insert Decryption key :
+            </h4>
+            <div class=" row g-3 align-items-center pt-4 ms-auto">
+              <div class="col-auto text-light">
+                <label for="inputPassword6" class="col-form-label" >
+                Public  Key  ' e ' :
+                </label>
+              </div>
+              <div class="col-auto">
+                <input
+                  type="password"
+                  id="inputPassword6"
+                  class="form-control"
+                  aria-describedby="passwordHelpInline"
+                  placeholder="Insert key"
+                />
+              </div>
+            </div>
+            <div class=" row g-3 align-items-center pt-4 ms-auto">
+              <div class="col-auto text-light">
+                <label for="inputPassword6" class="col-form-label" >
+                Public  Key  ' d ' :
+                </label>
+              </div>
+              <div class="col-auto">
+                <input
+                  type="password"
+                  id="inputPassword6"
+                  class="form-control"
+                  aria-describedby="passwordHelpInline"
+                  placeholder="Insert key"
+                />
+              </div>
+            </div>
+          </div>}
+          {
+            (valueDe!=="RSA") &&<div className="w-100 pt-5 d-flex flex-column">
+            <h4 className="text-light text-end fw-light">
+              3. Insert Decryption key :
+            </h4>
+          
+            <div class=" row g-3 align-items-center pt-4 ms-auto">
+              <div class="col-auto text-light">
+                <label for="inputPassword6" class="col-form-label" >
+                key value :
+                </label>
+              </div>
+              <div class="col-auto">
+                <input
+                  type="password"
+                  id="inputPassword6"
+                  class="form-control"
+                  aria-describedby="passwordHelpInline"
+                  placeholder="Insert key"
+                />
+              </div>
+            </div>
+          </div>}
+        </div>
+      </div>
+
+
+      <div className="text-light pb-5 d-flex flex-column ">
+        <div className="w-100 ">
+        <h4 className="text-light text-end fw-light pt-5">
+          4. Download your file :
+        </h4>
+        <h5 className="pt-5 text-info  text-end">  1. Text file.txt</h5>
+       
+      </div> 
+      <div className=" py-4 ms-auto d-flex">
+          
+          <button className="btn btn-light px-5" onClick={handleUpload}>Download</button>
+          <button className="btn btn-danger px-5 ms-4" onClick={() => setFiles(null)}>Cancel</button>
+        </div>
+        
+      </div>
+      </div>
         
       </div>
     </div>
