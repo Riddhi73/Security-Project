@@ -1,9 +1,9 @@
 /* eslint-disable jsx-a11y/anchor-is-valid */
 import React, { useState, useRef } from "react";
-import DriveFolderUploadIcon from "@mui/icons-material/DriveFolderUpload";
 import "./DragDropFiles.css";
 import Select from "react-select";
-import drag from "../../img/drag2.png";
+import axios from "../../utils/axios";
+// import { async } from "@firebase/util";
 
 const dropListItem = [
   {
@@ -32,6 +32,95 @@ const dropListItem = [
 const DragDropFiles = () => {
   const [valueEn, setValueEn] = useState(dropListItem.label);
   const [valueDe, setValueDe] = useState(dropListItem.label);
+  const [text, setText] = useState("");
+  const [e, setE] = useState(0);
+  const [n, setN] = useState(0);
+  const [d, setD] = useState(0);
+  const [key, setKey] = useState(0);
+  const [encrypted, setEncrypted] = useState(0);
+  const [decrypted, setDecrypted] = useState(0);
+
+  const rsaEn = async () => {
+    const response = await axios.post("/rsa-encryption", {
+      message: text,
+      e: parseInt(e),
+      n: parseInt(n),
+    });
+    // console.log(response.data.encrypted_message)
+    const { encrypted_message } = response.data;
+    let str = "";
+    for (let i = 0; i < encrypted_message.length; i++) {
+      str += encrypted_message[i].toString();
+      str += " ";
+    }
+    // setEncrypted(response.data.encrypted_message)
+    setEncrypted(str.slice(0, -1));
+
+    //console.log(encrypted);
+  };
+
+  const rsaDn = async () => {
+    const response = await axios.post("/rsa-decryption", {
+      encrypted_message: text,
+      e: parseInt(e),
+      n: parseInt(n),
+    });
+    // console.log(response.data.encrypted_message)
+    setDecrypted(response.data.decrypted_message);
+    //console.log(decrypted);
+  };
+
+  const hillEn = async () => {
+    const response = await axios.post("/hillcipher-encryption", {
+      message: text,
+    });
+    // console.log(response.data)
+    setEncrypted(response.data.encrypted_message);
+  };
+
+  const hillDe = async () => {
+    const response = await axios.post("/hillcipher-decryption", {
+      encrypted_message: text,
+    });
+    console.log(response.data)
+    setDecrypted(response.data.decrypted_message);
+  };
+
+  const vigenereEn = async () => {
+    const response = await axios.post("/vigenere-encryption", {
+      message: text,
+      key:key.toString()
+    });
+    // console.log(response.data)
+    setEncrypted(response.data.encrypted_message);
+  };
+  const vigenereDe = async () => {
+    const response = await axios.post("/vigenere-decryption", {
+      encrypted_message: text,
+      key:key.toString(),
+    });
+    console.log(response.data)
+    setDecrypted(response.data.decrypted_message);
+  };
+
+  const ceaserEn = async () => {
+    const response = await axios.post("/ceaser-cipher", {
+      message: text,
+      key:parseInt(key),
+      
+    });
+    // console.log(response.data)
+    setEncrypted(response.data.encrypted_message);
+  };
+  const ceaserDe = async () => {
+    const response = await axios.post("/ceaser-cipher-decryption", {
+      encrypted_message: text,
+      key:parseInt(key),
+    });
+    console.log(response.data)
+    setDecrypted(response.data.decrypted_message);
+  };
+
   const DropActionEn = (e) => {
     setValueEn(e.label);
   };
@@ -82,7 +171,7 @@ const DragDropFiles = () => {
     <div className="bg-theme-d">
       <div className="bg-theme-d pt-5 container">
         <h4 className="text-light text-start fw-light pt-5 pb-4">
-          1. Insert your text  :
+          1. Insert your text :
         </h4>
         {/* <div id="Music" className="py-5">
           <div className="p-3 bg-white container rounded-3">
@@ -121,7 +210,10 @@ const DragDropFiles = () => {
               class="form-control h-100p"
               placeholder="Leave a comment here"
               id="floatingTextarea2"
-            
+              value={text}
+              onChange={(e) => {
+                setText(e.target.value);
+              }}
             ></textarea>
             <label for="floatingTextarea2">Text </label>
           </div>
@@ -176,11 +268,15 @@ const DragDropFiles = () => {
                     </div>
                     <div class="col-auto">
                       <input
-                        type="password"
+                        type="number"
                         id="inputPassword6"
                         class="form-control"
                         aria-describedby="passwordHelpInline"
                         placeholder="Insert key"
+                        value={e}
+                        onChange={(e) => {
+                          setE(e.target.value);
+                        }}
                       />
                     </div>
                   </div>
@@ -192,11 +288,15 @@ const DragDropFiles = () => {
                     </div>
                     <div class="col-auto">
                       <input
-                        type="password"
+                        type="number"
                         id="inputPassword6"
                         class="form-control"
                         aria-describedby="passwordHelpInline"
                         placeholder="Insert key"
+                        value={n}
+                        onChange={(e) => {
+                          setN(e.target.value);
+                        }}
                       />
                     </div>
                   </div>
@@ -216,28 +316,40 @@ const DragDropFiles = () => {
                     </div>
                     <div class="col-auto">
                       <input
-                        type="password"
+                        type="text"
                         id="inputPassword6"
                         class="form-control"
                         aria-describedby="passwordHelpInline"
                         placeholder="Insert key"
+                        value={key}
+                        onChange={(e) => {
+                          setKey(e.target.value);
+                        }}
                       />
                     </div>
                   </div>
-
-                
                 </div>
               )}
             </div>
           </div>
-          <button className="btn btn-info px-5 py-2 fs-4 me-auto my-4">Encryption</button>
+          <button
+            className="btn btn-info px-5 py-2 fs-4 me-auto my-4"
+            onClick={() => {
+              if (valueEn === "RSA") rsaEn();
+              else if (valueEn === "Hill Cypher") hillEn();
+              else if (valueEn === "Caesar cipher") ceaserEn();
+              else if (valueEn === "Vigenere") vigenereEn();
+            }}
+          >
+            Encryption
+          </button>
           <div className="text-light pb-5 ">
             <div className="w-100 ">
               <h4 className="text-light text-start fw-light pt-5">
-                4. Download your file :
+                4. Output :
               </h4>
-              <h5 className="pt-5 text-info  text-start"> 1. Text file.txt</h5>
-              <div className=" py-4 ms-0 d-flex">
+              <h3 className="pt-5 text-info  text-start"> {encrypted}</h3>
+              {/* <div className=" py-4 ms-0 d-flex">
                 <button className="btn btn-light px-5" onClick={handleUpload}>
                   Download
                 </button>
@@ -247,7 +359,7 @@ const DragDropFiles = () => {
                 >
                   Cancel
                 </button>
-              </div>
+              </div> */}
             </div>
           </div>
         </div>
@@ -279,27 +391,35 @@ const DragDropFiles = () => {
                     </div>
                     <div class="col-auto">
                       <input
-                        type="password"
+                        type="number"
                         id="inputPassword6"
                         class="form-control"
                         aria-describedby="passwordHelpInline"
                         placeholder="Insert key"
+                        value={e}
+                        onChange={(e) => {
+                          setE(e.target.value);
+                        }}
                       />
                     </div>
                   </div>
                   <div class=" row g-3 align-items-center pt-4 ms-auto">
                     <div class="col-auto text-light">
                       <label for="inputPassword6" class="col-form-label">
-                        Public Key ' d ' :
+                        Public Key ' n ' :
                       </label>
                     </div>
                     <div class="col-auto">
                       <input
-                        type="password"
+                        type="number"
                         id="inputPassword6"
                         class="form-control"
                         aria-describedby="passwordHelpInline"
                         placeholder="Insert key"
+                        value={d}
+                        onChange={(e) => {
+                          setD(e.target.value);
+                        }}
                       />
                     </div>
                   </div>
@@ -319,11 +439,15 @@ const DragDropFiles = () => {
                     </div>
                     <div class="col-auto">
                       <input
-                        type="password"
+                        type="text"
                         id="inputPassword6"
                         class="form-control"
                         aria-describedby="passwordHelpInline"
                         placeholder="Insert key"
+                        value={key}
+                        onChange={(e) => {
+                          setKey(e.target.value);
+                        }}
                       />
                     </div>
                   </div>
@@ -331,15 +455,23 @@ const DragDropFiles = () => {
               )}
             </div>
           </div>
-          <button className="btn btn-info px-5 py-2 fs-4 ms-auto my-4">Decryption</button>
+          <button
+            className="btn btn-info px-5 py-2 fs-4 ms-auto my-4"
+            onClick={() => {
+              if (valueDe === "RSA") rsaDn();
+              else if (valueDe === "Hill Cypher") hillDe();
+              else if (valueDe === "Caesar cipher") ceaserDe();
+              else if (valueDe === "Vigenere") vigenereDe();
+            }}
+          >
+            Decryption
+          </button>
           <div className="text-light pb-5 d-flex flex-column ">
             <div className="w-100 ">
-              <h4 className="text-light text-end fw-light pt-5">
-                4. Download your file :
-              </h4>
-              <h5 className="pt-5 text-info  text-end"> 1. Text file.txt</h5>
+              <h4 className="text-light text-end fw-light pt-5">4. Output :</h4>
+              <h3 className="pt-5 text-info  text-end"> {decrypted}</h3>
             </div>
-            <div className=" py-4 ms-auto d-flex">
+            {/* <div className=" py-4 ms-auto d-flex">
               <button className="btn btn-light px-5" onClick={handleUpload}>
                 Download
               </button>
@@ -349,7 +481,7 @@ const DragDropFiles = () => {
               >
                 Cancel
               </button>
-            </div>
+            </div> */}
           </div>
         </div>
       </div>
