@@ -16,7 +16,7 @@ const dropListItem = [
   },
   {
     value: 3,
-    label: "Vigenere",
+    label: "Vigenere Algorithm",
   },
   {
     value: 4,
